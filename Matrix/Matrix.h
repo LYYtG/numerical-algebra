@@ -1,13 +1,15 @@
 /*
  * @Author: 李杨野
  * @Date: 2021-04-07 17:02:05
- * @LastEditTime: 2021-04-08 13:48:14
+ * @LastEditTime: 2021-04-10 13:54:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \undefinedd:\szds\Hilbert\Matrix.h
  */
 #include <vector>
 #include <cmath>
+#include <chrono>
+#include <algorithm>
 using namespace std;
 vector<double> UpperMatrix(vector<vector<double> > &matrix,vector<double> &b)
 {
@@ -303,4 +305,55 @@ vector<vector<double> > CertainMatrix(int n)
         } 
     }
     return matrix;
+}
+void LU(vector<vector<double> >&matrix,vector<vector<double> >&L,vector<vector<double> >&U)
+{
+    int n = matrix[0].size();
+    int i,j,k;
+    double t;
+    L = matrix;
+    for(i = 0;i<n;i++){
+        for(j = 0;j<n;j++){
+            U[i].push_back(0);
+        }
+    }
+    for(k = 0;k<n;k++){
+        if(L[k][k] == 0){
+            for(i = 0;i<n;i++){
+                if(L[i][k]!=0)break;
+            }
+            if(i == n){
+                //标志这一列全部是0，直接进行下一列的gauss变换。 
+                continue;
+            }else{
+                //对非0行进行交换。
+                for(j = 0;j<n;j++){
+                    t = L[i][j];
+                    L[i][j] = L[k][j];
+                    L[k][j] = t;
+                }
+            }
+        }
+        //此时k列所有元素应该不为0。
+        //用k+1:n区域存储矩阵L。
+        for(i = k+1;i<n;i++){
+            L[i][k] /= L[k][k];
+        }
+        //用k+1:n,k+1:n区域存储矩阵U。
+        for(i = k+1;i<n;i++){
+            for(j = k+1;j<n;j++){
+                L[i][j]-=L[i][k]*L[k][j];
+            }
+        }
+    }
+    for(i = 0;i<n;i++){
+        for(j = i;j<n;j++){
+            U[i][j] = L[i][j];
+            if(j == i){
+                L[i][j] = 1;
+            }else{
+                L[i][j] = 0;
+            }
+        }
+    }
 }
