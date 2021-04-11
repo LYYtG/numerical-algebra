@@ -1,7 +1,7 @@
 /*
  * @Author: 李杨野
  * @Date: 2021-04-07 17:02:05
- * @LastEditTime: 2021-04-10 13:54:49
+ * @LastEditTime: 2021-04-11 22:04:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \undefinedd:\szds\Hilbert\Matrix.h
@@ -60,18 +60,16 @@ void Transposition(vector<vector<double> > &matrix)
         }
     }
 }
-vector<vector<double> > TranspositionOutput(vector<vector<double> > &matrix)
+void TranspositionOutput(vector<vector<double> > &matrix,vector<vector<double> > &matrixT)
 {
     //矩阵转置
     int n = matrix[0].size();
-    vector<vector<double> > matrixT;
     int i,j,k;
     for(i = 0;i<n;i++){
         for(j = 0;j<n;j++){
             matrixT[i].push_back(matrix[j][i]);
         }
     }
-    return matrixT;
 }
 void ColumnPivot(vector<vector<double> > &matrix,vector<double> &b)
 {
@@ -142,10 +140,12 @@ void Print(vector<double> &b)
         }
         cout << endl;
 }
-vector<double> GaussColumnPivot(vector<vector<double> > &matrix,vector<double> &b)
+vector<double> GaussColumnPivot(vector<vector<double> > matrix,vector<double> b)
 {
     //列主元高斯消元法并输出解x。
+    
     int n = matrix[0].size();
+
     ColumnPivot(matrix,b);
     vector<double> x = UpperMatrix(matrix,b);
     return x;
@@ -356,4 +356,32 @@ void LU(vector<vector<double> >&matrix,vector<vector<double> >&L,vector<vector<d
             }
         }
     }
+}
+double CondInf(vector<vector<double> > &A)
+{
+    int n = A[0].size();
+    vector<vector<double> > AT(n);
+    TranspositionOutput(A,AT);
+    vector<double> x(n),w(n),v(n),z(n);
+    double t;
+    int i,j,k;
+        for(j = 0;j<n;j++){
+            x[j] = 1.0/n; 
+        }
+        k = 1;
+        while(k == 1){
+            w = GaussColumnPivot(AT,x);
+            for(j = 0;j<n;j++){
+                v[j] = Sign(w[j]);
+            }
+            z = GaussColumnPivot(A,v);
+            if(InfiniteNorm(z)<=Multiply(z,x)){
+                t = OneNorm(w);//A-1的无穷范数估计
+                k = 0;
+            }else{
+                x = ej(z);
+                k = 1;
+            }
+        }
+        return t*InfiniteNorm(A);
 }
