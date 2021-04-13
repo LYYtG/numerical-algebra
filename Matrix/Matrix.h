@@ -1,7 +1,7 @@
 /*
  * @Author: 李杨野
  * @Date: 2021-04-07 17:02:05
- * @LastEditTime: 2021-04-11 22:04:25
+ * @LastEditTime: 2021-04-13 13:54:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \undefinedd:\szds\Hilbert\Matrix.h
@@ -181,13 +181,13 @@ double OneNorm(vector<vector<double> > &matrix)
     //矩阵的1-范数
     int n = matrix[0].size();
     int i,j,k;
-    double max,sum = 0;
+    double max,sum = 0.0;
     for(i = 0;i<n;i++){
         sum+=fabs(matrix[i][0]);
     }
     max = sum;
     for(j = 1;j<n;j++){
-        sum = 0;
+        sum = 0.0;
         for(i = 0;i<n;i++){
             sum+=fabs(matrix[i][j]);
         }
@@ -225,6 +225,18 @@ vector<double> ej(vector<double> &b)
         }
         else{
             x[i] = 0;
+        }
+    }
+    return x;
+}
+vector<double> ej(int n,int j)
+{
+    vector<double> x(n);
+    for(int i = 0;i<n;i++){
+        if(i!=j){
+            x[i] = 0;
+        }else{
+            x[i] = 1;
         }
     }
     return x;
@@ -359,6 +371,7 @@ void LU(vector<vector<double> >&matrix,vector<vector<double> >&L,vector<vector<d
 }
 double CondInf(vector<vector<double> > &A)
 {
+    //计算某些病态矩阵（Hilbert）不太精确。其他的尚可。
     int n = A[0].size();
     vector<vector<double> > AT(n);
     TranspositionOutput(A,AT);
@@ -384,4 +397,14 @@ double CondInf(vector<vector<double> > &A)
             }
         }
         return t*InfiniteNorm(A);
+}
+void Inv(vector<vector<double> > &matrix,vector<vector<double> > &invmatrix)
+{
+    //对于病态矩阵求无穷范数条件数相比CondInf较为精确，仅作测试使用！计算量较大
+    int n = matrix[0].size();
+    int i,j,k;
+    for(i = 0;i<n;i++){
+        invmatrix[i] = GaussColumnPivot(matrix,ej(n,i));
+    }
+    return Transposition(invmatrix);
 }
