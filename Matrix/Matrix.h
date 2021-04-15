@@ -1,10 +1,12 @@
-/*
- * @Author: 李杨野
- * @Date: 2021-04-07 17:02:05
- * @LastEditTime: 2021-04-15 12:53:37
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
- * @FilePath: \undefinedd:\szds\Hilbert\Matrix.h
+/**
+ * @file Matrix.h
+ * @author 李杨野 (1300096763@qq.com 3190103519@zju.edu.cn)
+ * @brief Header file for matrix, for test only.
+ * @version 0.1
+ * @date 2021-04-15
+ * 
+ * @copyright Copyright (c) 2021 
+ * 
  */
 #include <vector>
 #include <cmath>
@@ -20,13 +22,24 @@ Class Matrix(){
         ~Matrix();
 };
 */
+
+/**I was intended to construct a class to simplify my code before. but it would take too much time to rewrite it.
+ * so the class was abandoned.
+ */
+
+/**
+ * @brief Solution of Upper Matrix equations.
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector<double> the solution.
+ */
 vector<double> UpperMatrix(vector<vector<double> > &matrix,vector<double> &b)
 {
     int n = matrix[0].size();
     int i,j,k;
     double t;
     vector<double> x(n);
-    //回代法
     x[n-1] = b[n-1]/matrix[n-1][n-1];
     for(i = n-2;i>=0;i--){
         t = b[i];
@@ -37,13 +50,19 @@ vector<double> UpperMatrix(vector<vector<double> > &matrix,vector<double> &b)
     }
     return x;
 }
+/**
+ * @brief Solution of Lower Matrix equations
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector<double> the solution.
+ */
 vector<double> LowerMatrix(vector<vector<double> > &matrix,vector<double> &b)
 {
     int n = matrix[0].size();
     int i,j,k;
     double t;
     vector<double> x(n);
-    //前代法
     x[0] = b[0]/matrix[0][0];
     for(i = 1;i<n;i++){
         t = b[i];
@@ -54,6 +73,11 @@ vector<double> LowerMatrix(vector<vector<double> > &matrix,vector<double> &b)
     }
     return x;
 }
+/**
+ * @brief in-place matrix Transposition.
+ * 
+ * @param matrix 
+ */
 void Transposition(vector<vector<double> > &matrix)
 {
     //矩阵原位转置
@@ -69,6 +93,12 @@ void Transposition(vector<vector<double> > &matrix)
         }
     }
 }
+/**
+ * @brief not in-place matrix Transpostion
+ * 
+ * @param matrix 
+ * @param matrixT where the output lies.
+ */
 void TranspositionOutput(vector<vector<double> > &matrix,vector<vector<double> > &matrixT)
 {
     //矩阵转置
@@ -80,6 +110,12 @@ void TranspositionOutput(vector<vector<double> > &matrix,vector<vector<double> >
         }
     }
 }
+/**
+ * @brief Common Gauss column pivot decomposition. Subfunction of the GaussColumnPivot function below.
+ * 
+ * @param matrix 
+ * @param b 
+ */
 void ColumnPivot(vector<vector<double> > &matrix,vector<double> &b)
 {
     //效果是把矩阵通过Gauss变换转换为上三角阵。
@@ -117,6 +153,12 @@ void ColumnPivot(vector<vector<double> > &matrix,vector<double> &b)
         }     
     }
 }
+/**
+ * @brief Print the Matrix and vector. Useless function, I will delete this soon.
+ * 
+ * @param matrix 
+ * @param b 
+ */
 void Print(vector<vector<double> > &matrix,vector<double> &b)
 {
     //同时打印系数矩阵和b。
@@ -129,6 +171,11 @@ void Print(vector<vector<double> > &matrix,vector<double> &b)
         cout << b[i] << endl;
     }
 }
+/**
+ * @brief Print the matrix.
+ * 
+ * @param matrix 
+ */
 void Print(vector<vector<double> > &matrix)
 {
     //同时打印系数矩阵和b。
@@ -141,6 +188,11 @@ void Print(vector<vector<double> > &matrix)
         cout << endl;
     }
 }
+/**
+ * @brief Print the vector.
+ * 
+ * @param b 
+ */
 void Print(vector<double> &b)
 {
     int n = b.size();
@@ -149,6 +201,13 @@ void Print(vector<double> &b)
         }
         cout << endl;
 }
+/**
+ * @brief Gauss Column Pivot way to solve equations. It's worth mention that the matrix must be non-singular.
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector<double> the soluton vector.
+ */
 vector<double> GaussColumnPivot(vector<vector<double> > matrix,vector<double> b)
 {
     //列主元高斯消元法并输出解x。
@@ -159,6 +218,12 @@ vector<double> GaussColumnPivot(vector<vector<double> > matrix,vector<double> b)
     vector<double> x = UpperMatrix(matrix,b);
     return x;
 }
+/**
+ * @brief create a Hilbert Matrix.
+ * 
+ * @param n order of matrix.
+ * @return vector<vector<double> > n-ordered Hilbert Matrix.
+ */
 vector<vector<double> > Hilbert(int n)
 {
     //生成n阶Hilbert矩阵
@@ -171,10 +236,12 @@ vector<vector<double> > Hilbert(int n)
     }
     return matrix;
 }
-void Reverse(vector<vector<double> > &matrix)
-{
-    ;//to be done.
-}
+/**
+ * @brief 1-norm of a vector.
+ * 
+ * @param b 
+ * @return double 1-norm.
+ */
 double OneNorm(vector<double> &b)
 {
     //向量的1-范数
@@ -185,6 +252,12 @@ double OneNorm(vector<double> &b)
     }
     return sum;
 }
+/**
+ * @brief 1-norm of a matrix, defined by 1-norm of vector.
+ * 
+ * @param matrix 
+ * @return double 1-norm
+ */
 double OneNorm(vector<vector<double> > &matrix)
 {
     //矩阵的1-范数
@@ -204,6 +277,12 @@ double OneNorm(vector<vector<double> > &matrix)
     }
     return max;
 }
+/**
+ * @brief inf-norm of a matrix.
+ * 
+ * @param b 
+ * @return double int-norm.
+ */
 double InfiniteNorm(vector<double> &b)
 {
     //向量的∞范数
@@ -215,6 +294,12 @@ double InfiniteNorm(vector<double> &b)
     }
     return max;
 }
+/**
+ * @brief according to the input vector generate a Ej. Subfunction of CondInf.
+ * 
+ * @param b 
+ * @return vector<double> Ej
+ */
 vector<double> ej(vector<double> &b)
 {
     int n = b.size();
@@ -238,6 +323,13 @@ vector<double> ej(vector<double> &b)
     }
     return x;
 }
+/**
+ * @brief common definition of ej, aka index vector.
+ * 
+ * @param n the order of vector.
+ * @param j 
+ * @return vector<double> Ej
+ */
 vector<double> ej(int n,int j)
 {
     vector<double> x(n);
@@ -250,6 +342,12 @@ vector<double> ej(int n,int j)
     }
     return x;
 }
+/**
+ * @brief the inf-norm of a matrix.
+ * 
+ * @param matrix 
+ * @return double inf norm.
+ */
 double InfiniteNorm(vector<vector<double> > &matrix)
 {
     //矩阵的∞范数
@@ -269,6 +367,12 @@ double InfiniteNorm(vector<vector<double> > &matrix)
     }
     return max;
 }
+/**
+ * @brief sgn(x) in math.
+ * 
+ * @param x 
+ * @return int sgn(x)
+ */
 int Sign(double x)
 {
     //sgn(x)
@@ -282,6 +386,13 @@ int Sign(double x)
     }
     return ret;
 }
+/**
+ * @brief A*b, A belongs to Rn×n, b belongs to Rn. 
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector<double> A*b
+ */
 vector<double> Multiply(vector<vector<double> > &matrix,vector<double> &b)
 {
     //矩阵和向量乘法
@@ -299,6 +410,13 @@ vector<double> Multiply(vector<vector<double> > &matrix,vector<double> &b)
     }
     return x;
 }
+/**
+ * @brief vector multiplies vector
+ * 
+ * @param a 
+ * @param b 
+ * @return double a*b
+ */
 double Multiply(vector<double> &a,vector<double> &b)
 {
     double sum = 0;
@@ -308,6 +426,12 @@ double Multiply(vector<double> &a,vector<double> &b)
     }
     return sum;
 }
+/**
+ * @brief Generate a certain matrix in 2.17.2
+ * 
+ * @param n 
+ * @return vector<vector<double> > 
+ */
 vector<vector<double> > CertainMatrix(int n)
 {
     //生成n阶题目所示矩阵
@@ -327,6 +451,13 @@ vector<vector<double> > CertainMatrix(int n)
     }
     return matrix;
 }
+/**
+ * @brief LU decomposition of non-singular matrix.
+ * 
+ * @param matrix 
+ * @param L due to 2 outputs, directly use &L as input. 
+ * @param U due to 2 outputs, directly use &U as input. 
+ */
 void LU(vector<vector<double> >&matrix,vector<vector<double> >&L,vector<vector<double> >&U)
 {
     int n = matrix[0].size();
@@ -378,6 +509,12 @@ void LU(vector<vector<double> >&matrix,vector<vector<double> >&L,vector<vector<d
         }
     }
 }
+/**
+ * @brief equals to cond(A,inf) in MATLAB, but not very precise.
+ * 
+ * @param A 
+ * @return double cond(A,inf)
+ */
 double CondInf(vector<vector<double> > &A)
 {
     //计算某些病态矩阵（Hilbert）不太精确。其他的尚可。
@@ -407,16 +544,31 @@ double CondInf(vector<vector<double> > &A)
         }
         return t*InfiniteNorm(A);
 }
-void Inv(vector<vector<double> > &matrix,vector<vector<double> > &invmatrix)
+/**
+ * @brief use Gauss Column Pivot to generate the inverse matrix. Equals to inv(A) in MATLAB
+ * 
+ * @param matrix 
+ * @param invmatrix 
+ */
+vector<vector<double> > Inv(vector<vector<double> > &matrix)
 {
-    //对于病态矩阵求无穷范数条件数相比CondInf较为精确，仅作测试使用！计算量较大
+    //对于病态矩阵求无穷范数条件数相比CondInf较为精确，仅作测试使用！计算量较大，实用价值不高
     int n = matrix[0].size();
+    vector<vector<double> > invmatrix(n,vector<double> (n));
     int i,j,k;
     for(i = 0;i<n;i++){
         invmatrix[i] = GaussColumnPivot(matrix,ej(n,i));
     }
-    return Transposition(invmatrix);
+    Transposition(invmatrix);
+    return invmatrix;
 }
+/**
+ * @brief Least Squares
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector <double> LS x
+ */
 vector <double> LS(vector<vector<double> > matrix,vector<double> b)
 {
     //最小二乘解 估计
@@ -436,11 +588,16 @@ vector <double> LS(vector<vector<double> > matrix,vector<double> b)
         }
     }
     vector<double> x(n),y(n);
-    
+    return b;
 }
+/**
+ * @brief Cholesky decomposition.
+ * 
+ * @param matrix 
+ */
 void Cholesky(vector<vector<double> > &matrix)
 {
-    
+    //使用平方根法的矩阵分解，将原矩阵转化为L。
     int n = matrix[0].size();
     int i,j,k;
     for(k = 0;k<n;k++){
@@ -460,9 +617,14 @@ void Cholesky(vector<vector<double> > &matrix)
         }
     }   
 }
+/**
+ * @brief Cholesky decomposition without sqrt.
+ * 
+ * @param matrix 
+ */
 void Cholesky_No_Sqrt(vector<vector<double> > &matrix)
 {
-    
+    //不作开方运算，采用平方根法的矩阵分解，将矩阵转化为L。
     int n = matrix[0].size();
     int i,j,k;
     double v[n];

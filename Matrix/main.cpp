@@ -1,10 +1,12 @@
-/*
- * @Author: your name
- * @Date: 2021-04-10 13:49:25
- * @LastEditTime: 2021-04-13 13:39:02
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
- * @FilePath: \undefinedd:\numerical-algebra\Matrix\main.cpp
+/**
+ * @file main.cpp
+ * @author 李杨野 (1300096763@qq.com 3190103519@zju.edu.cn)
+ * @brief test file.
+ * @version 0.1
+ * @date 2021-04-15
+ * 
+ * @copyright Copyright (c) 2021
+ * 
  */
 #include <iostream>
 #include "Matrix.h"
@@ -23,6 +25,7 @@ int main()
             A[i].push_back(t);
         }
     }
-    cout << CondInf(A) << endl;
+    B = Inv(A);
+    Print(B);
     return 0;
 }
