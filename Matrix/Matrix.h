@@ -1,7 +1,7 @@
 /*
  * @Author: 李杨野
  * @Date: 2021-04-07 17:02:05
- * @LastEditTime: 2021-04-13 13:54:05
+ * @LastEditTime: 2021-04-15 12:53:37
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \undefinedd:\szds\Hilbert\Matrix.h
@@ -11,6 +11,15 @@
 #include <chrono>
 #include <algorithm>
 using namespace std;
+/**
+Class Matrix(){
+    private:
+        vector<vector<double> > matrix;
+    public:
+        Matrix();
+        ~Matrix();
+};
+*/
 vector<double> UpperMatrix(vector<vector<double> > &matrix,vector<double> &b)
 {
     int n = matrix[0].size();
@@ -407,4 +416,73 @@ void Inv(vector<vector<double> > &matrix,vector<vector<double> > &invmatrix)
         invmatrix[i] = GaussColumnPivot(matrix,ej(n,i));
     }
     return Transposition(invmatrix);
+}
+vector <double> LS(vector<vector<double> > matrix,vector<double> b)
+{
+    //最小二乘解 估计
+    int n = matrix[0].size();
+    int i,j,k;
+    double sum = 0;
+    vector<vector<double> > matrixT(n);
+    TranspositionOutput(matrix,matrixT);
+    //进行矩阵乘法，时间复杂度过高
+    vector<vector<double> > matrixTmatrix(n);
+    for(i = 0;i<n;i++){
+        for(j = 0;j<n;j++){
+            matrixTmatrix[i].push_back(0);
+            for(k = 0;k<n;k++){
+                matrixTmatrix[i][j]+=matrixT[i][k]*matrix[k][j];
+            }
+        }
+    }
+    vector<double> x(n),y(n);
+    
+}
+void Cholesky(vector<vector<double> > &matrix)
+{
+    
+    int n = matrix[0].size();
+    int i,j,k;
+    for(k = 0;k<n;k++){
+        matrix[k][k] = sqrt(matrix[k][k]);
+        for(i = k+1;i<n;i++){
+            matrix[i][k]/=matrix[k][k];
+        }
+        for(j = k+1;j<n;j++){
+            for(i = j;i<n;i++){
+                matrix[i][j]-=matrix[i][k]*matrix[j][k];
+            }
+        }
+    }
+    for(i = 1;i<n;i++){
+        for(j = 0;j<i;j++){
+            matrix[j][i] = 0.0;
+        }
+    }   
+}
+void Cholesky_No_Sqrt(vector<vector<double> > &matrix)
+{
+    
+    int n = matrix[0].size();
+    int i,j,k;
+    double v[n];
+    for(j = 0;j<n;j++){
+        for(i = 0;i<j;i++){
+            v[i] = matrix[j][i]*matrix[i][i];
+        }
+        for(i = 0;i<j;i++){
+            matrix[j][j]-=matrix[j][i]*v[i];
+        }
+        for(k = j+1;k<n;k++){
+            for(i = 0;i<j;i++){
+                matrix[k][j]-=matrix[k][i]*v[i];
+            }
+            matrix[k][j]/=matrix[j][j];
+        }
+    }
+    for(i = 1;i<n;i++){
+        for(j = 0;j<i;j++){
+            matrix[j][i] = 0.0;
+        }
+    }   
 }
