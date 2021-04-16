@@ -78,7 +78,7 @@ vector<double> LowerMatrix(vector<vector<double> > &matrix,vector<double> &b)
  * 
  * @param matrix 
  */
-void Transposition(vector<vector<double> > &matrix)
+void Transposition_In_Place(vector<vector<double> > &matrix)
 {
     //矩阵原位转置
     int n = matrix[0].size();
@@ -109,6 +109,25 @@ void TranspositionOutput(vector<vector<double> > &matrix,vector<vector<double> >
             matrixT[i].push_back(matrix[j][i]);
         }
     }
+}
+/**
+ * @brief another Transposition.
+ * 
+ * @param matrix 
+ * @return vector<vector<double> > 
+ */
+vector<vector<double> > Transposition(vector<vector<double> > &matrix)
+{
+    int m = matrix.size();
+    int n = matrix[0].size();
+    vector<vector<double> > matrixT(n,vector<double> (m));
+    int i,j;
+    for(i = 0;i<n;i++){
+        for(j = 0;j<m;j++){
+            matrixT[i][j] = matrix[j][i];
+        }
+    }
+    return matrixT;
 }
 /**
  * @brief Common Gauss column pivot decomposition. Subfunction of the GaussColumnPivot function below.
@@ -178,10 +197,10 @@ void Print(vector<vector<double> > &matrix,vector<double> &b)
  */
 void Print(vector<vector<double> > &matrix)
 {
-    //同时打印系数矩阵和b。
     int i,j;
+    int m = matrix.size();
     int n = matrix[0].size();
-    for(i = 0;i<n;i++){
+    for(i = 0;i<m;i++){
         for(j = 0;j<n;j++){
             cout << matrix[i][j] << " ";
         }
@@ -396,19 +415,40 @@ int Sign(double x)
 vector<double> Multiply(vector<vector<double> > &matrix,vector<double> &b)
 {
     //矩阵和向量乘法
+    int m = matrix.size();
     int n = matrix[0].size();
     if(b.size()!=n){
         std::cerr << "Dimension no Match!";
     }
     vector<double > x(n);
     int i,j;
-    for(i = 0;i<n;i++){
+    for(i = 0;i<m;i++){
         x[i] = 0;
         for(j = 0;j<n;j++){
             x[i]+=matrix[i][j]*b[j];
         }
     }
     return x;
+}
+vector<vector<double> > Multiply(vector<vector<double> > A,vector<vector<double> > B)
+{
+    int m,n,i,j,k,n1;
+    m = A.size();
+    n = A[0].size();
+    n1 = B[0].size();
+    if(n!=B.size()){
+        cerr << "Dimensions no match!";
+    }
+    vector<vector<double> > AB(m,vector<double> (n1));
+    for(i = 0;i<m;i++){
+        for(j = 0;j<n1;j++){
+            AB[i][j] = 0.0;
+            for(k = 0;k<n;k++){
+                AB[i][j]+=A[i][k]*B[k][j];
+            }
+        }
+    }
+    return AB;
 }
 /**
  * @brief vector multiplies vector
@@ -559,43 +599,16 @@ vector<vector<double> > Inv(vector<vector<double> > &matrix)
     for(i = 0;i<n;i++){
         invmatrix[i] = GaussColumnPivot(matrix,ej(n,i));
     }
-    Transposition(invmatrix);
+    Transposition_In_Place(invmatrix);
     return invmatrix;
 }
 /**
- * @brief Least Squares
+ * @brief Cholesky decomposition. Applies to symmetrical matrix only.
  * 
  * @param matrix 
- * @param b 
- * @return vector <double> LS x
+ * @return vector<vector<double> > 
  */
-vector <double> LS(vector<vector<double> > matrix,vector<double> b)
-{
-    //最小二乘解 估计
-    int n = matrix[0].size();
-    int i,j,k;
-    double sum = 0;
-    vector<vector<double> > matrixT(n);
-    TranspositionOutput(matrix,matrixT);
-    //进行矩阵乘法，时间复杂度过高
-    vector<vector<double> > matrixTmatrix(n);
-    for(i = 0;i<n;i++){
-        for(j = 0;j<n;j++){
-            matrixTmatrix[i].push_back(0);
-            for(k = 0;k<n;k++){
-                matrixTmatrix[i][j]+=matrixT[i][k]*matrix[k][j];
-            }
-        }
-    }
-    vector<double> x(n),y(n);
-    return b;
-}
-/**
- * @brief Cholesky decomposition.
- * 
- * @param matrix 
- */
-void Cholesky(vector<vector<double> > &matrix)
+vector<vector<double> > Cholesky(vector<vector<double> > matrix)
 {
     //使用平方根法的矩阵分解，将原矩阵转化为L。
     int n = matrix[0].size();
@@ -615,16 +628,18 @@ void Cholesky(vector<vector<double> > &matrix)
         for(j = 0;j<i;j++){
             matrix[j][i] = 0.0;
         }
-    }   
+    }
+    return matrix;  
 }
 /**
- * @brief Cholesky decomposition without sqrt.
+ * @brief Cholesky alternative for LDL decomposition. The diag(matrix) is D, and the remaining is L.
  * 
  * @param matrix 
+ * @return vector<vector<double> > 
  */
-void Cholesky_No_Sqrt(vector<vector<double> > &matrix)
+vector<vector<double> > Cholesky_No_Sqrt(vector<vector<double> > matrix)
 {
-    //不作开方运算，采用平方根法的矩阵分解，将矩阵转化为L。
+    //不作开方运算，采用平方根法的矩阵分解，将矩阵转化为LDL。
     int n = matrix[0].size();
     int i,j,k;
     double v[n];
@@ -647,4 +662,33 @@ void Cholesky_No_Sqrt(vector<vector<double> > &matrix)
             matrix[j][i] = 0.0;
         }
     }   
+    return matrix;
+}
+/**
+ * @brief Least Squares
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector <double> LS x
+ */
+vector <double> LS(vector<vector<double> > matrix,vector<double> b)
+{
+    //最小二乘解 估计
+    int m = matrix.size();
+    int n = matrix[0].size();
+    int i,j,k;
+    double sum = 0;
+    vector<vector<double> > matrixT(n,vector<double >(m));
+    matrixT = Transposition(matrix);
+    //进行矩阵乘法，时间复杂度过高 matrixTmatrix 即书本上C
+    vector<vector<double> > matrixTmatrix(m,vector<double> (m)),L(m,vector<double> (m)),LT(m,vector<double> (m));
+    matrixTmatrix = Multiply(matrixT,matrix);
+    vector<double> x(m),y(m),d(m);
+    d = Multiply(matrixT,b);
+    L = Cholesky(matrixTmatrix);
+    LT = Transposition(L);
+    y = LowerMatrix(L,d);
+    x = UpperMatrix(LT,y);
+    //Cholesky_No_Sqrt(matrix);//把matrix转化为L。
+    return x;
 }
