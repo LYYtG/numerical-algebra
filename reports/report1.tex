@@ -1,0 +1,147 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{ctex}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{geometry}
+\geometry{left = 2.0cm,right = 2.0cm,top = 1.5cm,bottom = 1.5cm}
+\usepackage{xcolor}
+\lstset{
+ columns=fixed,       
+ numbers=left,                                        % 在左侧显示行号
+ basicstyle=\fontspec{Consolas},
+ numberstyle=\tiny\color{gray},                       % 设定行号格式
+ frame=none,                                          % 不显示背景边框
+ backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+ keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+ numberstyle=\footnotesize\color{darkgray},           
+ commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+ stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+ showstringspaces=false,                              % 不显示字符串中的空格
+ language=c++,                                        % 设置语言
+}
+\graphicspath{{/images}}
+\title{P75页第2题}
+\author{信息与计算科学专业 3190103519 李杨野}
+\date{\today}
+\begin{document}
+    \maketitle
+    \section{实验方案}
+    使用自写的Matrix.h头文件和测试程序main.cpp进行实验。\\
+    Matrix.h文件中包含计算无穷范数条件数函数$CondInf$,高斯列主元消去法$GaussColumnPivot$,及矩阵基本运算操作等等。\\
+    首先根据题意，使用$CertainMatrix(n)$函数生成题意矩阵，然后生成随机解。
+    \begin{lstlisting}
+    for(n = 5;n<=30;n++){
+        A = CertainMatrix(n);
+        x = RandomX(n);
+        b = Multiply(A,x);
+        x1 = GaussColumnPivot(A,b);
+        b1 = Multiply(A,x1);
+        for(i = 0;i<n;i++){
+            x1[i]-=x[i];
+            b1[i]-=b[i];
+        }
+        cout <<"Real:"<< InfiniteNorm(x1)/InfiniteNorm(x)<< endl;
+        cout <<"Estimate:"<< InfiniteNorm(b1)/InfiniteNorm(b)*CondInf(A)<<endl;
+    }     
+    \end{lstlisting}
+    随机解生成函数如下：
+    \begin{lstlisting}
+        vector<double> RandomX(int n)
+        {
+            unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+            default_random_engine generator (seed);
+            uniform_int_distribution<int> distribution(1,10);
+            vector<double> x(n);
+            for(int i = 0;i<n;i++){
+                x[i] = distribution(generator)/10.0;
+            }
+            return x;
+        }
+    \end{lstlisting}
+    \section{实验结果}
+    对$n = 5~30$的随机数据分别求解，得到结果如下所示：\\
+    \begin{lstlisting}
+        n = 5:
+        Real:2.79794e-016
+        Estimate:1.02798e-014
+        n = 6:
+        Real:9.63735e-016
+        Estimate:0
+        n = 7:
+        Real:5.20417e-016
+        Estimate:0
+        n = 8:
+        Real:3.46945e-015
+        Estimate:1.98476e-013
+        n = 9:
+        Real:7.3041e-016
+        Estimate:0
+        n = 10:
+        Real:8.31222e-015
+        Estimate:0
+        n = 11:
+        Real:1.56863e-015
+        Estimate:1.73688e-012
+        n = 12:
+        Real:2.91336e-014
+        Estimate:1.33227e-012
+        n = 13:
+        Real:1.57718e-013
+        Estimate:1.09153e-011
+        n = 14:
+        Real:1.31797e-013
+        Estimate:0
+        n = 15:
+        Real:1.29219e-014
+        Estimate:6.56896e-012
+        n = 16:
+        Real:7.68327e-013
+        Estimate:5.21948e-011
+        n = 17:
+        Real:1.85876e-013
+        Estimate:1.32375e-010
+        n = 18:
+        Real:1.55486e-013
+        Estimate:2.37604e-010
+        n = 19:
+        Real:3.83771e-012
+        Estimate:7.53944e-011
+        n = 20:
+        Real:1.81591e-011
+        Estimate:1.80769e-009
+        n = 21:
+        Real:5.88466e-012
+        Estimate:4.41604e-009
+        n = 22:
+        Real:2.84254e-011
+        Estimate:8.19826e-009
+        n = 23:
+        Real:1.03381e-010
+        Estimate:1.36749e-008
+        n = 24:
+        Real:2.87764e-010
+        Estimate:4.8633e-008
+        n = 25:
+        Real:7.89457e-011
+        Estimate:3.10607e-008
+        n = 26:
+        Real:7.01251e-011
+        Estimate:2.28222e-007
+        n = 27:
+        Real:7.91937e-010
+        Estimate:8.40291e-007
+        n = 28:
+        Real:2.09512e-009
+        Estimate:1.00878e-006
+        n = 29:
+        Real:5.71148e-010
+        Estimate:1.51946e-006
+        n = 30:
+        Real:6.10602e-009
+        Estimate:9.91208e-006
+    \end{lstlisting}
+    注意到大部分数据都能很好满足$Real\le Estimate$的条件，但是由于数据随机选取，一些估计解因舍入误差导致显示为0，且n越小现象越普遍。这也是程序需要改进之处。
+    
+\end{document}
