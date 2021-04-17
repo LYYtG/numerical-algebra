@@ -1,7 +1,7 @@
 /**
  * @file Matrix.h
  * @author 李杨野 (1300096763@qq.com 3190103519@zju.edu.cn)
- * @brief Header file for matrix, for test only.
+ * @brief Header file for matrix, for test only. Completely written by myself.
  * @version 0.1
  * @date 2021-04-15
  * 
@@ -17,6 +17,8 @@ using namespace std;
 Class Matrix(){
     private:
         vector<vector<double> > matrix;
+        int n;
+        int m;
     public:
         Matrix();
         ~Matrix();
@@ -430,6 +432,13 @@ vector<double> Multiply(vector<vector<double> > &matrix,vector<double> &b)
     }
     return x;
 }
+/**
+ * @brief matrix multipulication.
+ * 
+ * @param A 
+ * @param B 
+ * @return vector<vector<double> > matrix
+ */
 vector<vector<double> > Multiply(vector<vector<double> > A,vector<vector<double> > B)
 {
     int m,n,i,j,k,n1;
@@ -592,7 +601,7 @@ double CondInf(vector<vector<double> > &A)
  */
 vector<vector<double> > Inv(vector<vector<double> > &matrix)
 {
-    //对于病态矩阵求无穷范数条件数相比CondInf较为精确，仅作测试使用！计算量较大，实用价值不高
+    //对于病态矩阵求无穷范数条件数相比CondInf较为精确(也可能是我上面Cond写太烂了)，仅作测试使用！计算量较大，实用价值不高。
     int n = matrix[0].size();
     vector<vector<double> > invmatrix(n,vector<double> (n));
     int i,j,k;
@@ -665,7 +674,7 @@ vector<vector<double> > Cholesky_No_Sqrt(vector<vector<double> > matrix)
     return matrix;
 }
 /**
- * @brief Least Squares
+ * @brief Least Squares(in 2-norm)
  * 
  * @param matrix 
  * @param b 
@@ -681,14 +690,14 @@ vector <double> LS(vector<vector<double> > matrix,vector<double> b)
     vector<vector<double> > matrixT(n,vector<double >(m));
     matrixT = Transposition(matrix);
     //进行矩阵乘法，时间复杂度过高 matrixTmatrix 即书本上C
-    vector<vector<double> > matrixTmatrix(m,vector<double> (m)),L(m,vector<double> (m)),LT(m,vector<double> (m));
+    vector<vector<double> > matrixTmatrix(n,vector<double> (n)),L(n,vector<double> (n)),LT(n,vector<double> (n));
     matrixTmatrix = Multiply(matrixT,matrix);
-    vector<double> x(m),y(m),d(m);
+    vector<double> x(n),y(n),d(n);
     d = Multiply(matrixT,b);
     L = Cholesky(matrixTmatrix);
     LT = Transposition(L);
     y = LowerMatrix(L,d);
     x = UpperMatrix(LT,y);
-    //Cholesky_No_Sqrt(matrix);//把matrix转化为L。
     return x;
 }
+//还有一些有待改进的问题：1.对奇异矩阵没有预警机制，导致NaN出现 2.可以用符号重载简化操作
