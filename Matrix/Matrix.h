@@ -700,4 +700,162 @@ vector <double> LS(vector<vector<double> > matrix,vector<double> b)
     x = UpperMatrix(LT,y);
     return x;
 }
-//还有一些有待改进的问题：1.对奇异矩阵没有预警机制，导致NaN出现 2.可以用符号重载简化操作
+/**
+ * @brief Householder transformation
+ * 
+ * @param x 
+ * @param beta 
+ * @return vector<double> 
+ */
+vector<double> Householder(vector<double> x, double &beta)
+{
+    int n = x.size();
+    vector<double> v(n);
+    int i,j,k;
+    double sum = 0;
+    //double beta;
+    double xinf = InfiniteNorm(x);
+    for(i = 0;i<n;i++){
+        x[i]/=xinf;//除以x的无穷范数，防止溢出
+    }
+    for(i = 1;i<n;i++){
+        sum+=x[i]*x[i];
+        v[i] = x[i];
+    }
+    if(sum == 0){
+        beta = 0;
+    }else{
+        double alpha = sqrt(x[0]*x[0]+sum);
+        if(x[0]<=0){
+            v[0] = x[0] - alpha;
+        }else{
+            v[0] = -sum/(x[0]+alpha);
+        }
+        beta = 2*v[0]*v[0]/(sum + v[0]*v[0]);
+        double t = v[0];
+        for(j = 0;j<n;j++){
+            v[j]/=t;
+        }
+    }
+    return v;
+}
+/**
+ * @brief Generates Householder Matrixs. Subfunction of lsqr.
+ * 
+ * @param v 
+ * @param beta 
+ * @param M 
+ * @return vector<vector<double> > Householder Matrix.
+ */
+vector<vector<double> > HouseholderMatrix(vector<double> v,double beta,int M)
+{
+    int n = v.size();//v的长度，和矩阵高度不等，需要用I补齐
+    int i,j,k;
+    vector<vector<double> >H(M,vector<double > (M));
+    for(i = 0;i<M-n;i++){
+        H[i][i] = 1;
+    }
+    for(i = M-n;i<M;i++){
+        for(j = M-n;j<M;j++){
+            if(i == j){
+                H[i][j] = 1-beta*v[i-M+n]*v[j-M+n];
+            }else{
+                H[i][j] = -beta*v[i-M+n]*v[j-M+n];
+            }
+        }
+    }
+    return H;
+}
+/**
+ * @brief QR composition. Subfunction of lsqr.
+ * 
+ * @param matrix Used to store R in the later procession.
+ * @return vector<vector<double> > Q
+ */
+vector<vector<double> > QR(vector<vector<double> > &matrix)
+{
+    int i,j,k;
+    int m = matrix.size();
+    int n = matrix[0].size();
+    vector<double> d(n);
+    double beta;
+    for(j = 0;j<n;j++){
+        if(j<m){
+            vector<double> v(m-j),x(m-j);
+            for(i = 0;i<m-j;i++){
+                x[i] = matrix[j+i][j];
+            }
+            v = Householder(x,beta);
+            //delete [] x;
+            vector<vector<double> >temp(m-j,vector<double > (n-j));
+            for(i = j;i<m;i++){
+                for(k = j;k<n;k++){
+                    temp[i-j][k-j] = matrix[i][k];
+                }
+            }
+            vector<vector<double> >H(m-j,vector<double > (m-j));
+            for(i = 0;i<m-j;i++){
+                for(k = 0;k<m-j;k++){
+                    if(i == k){
+                        H[i][k] = 1-beta*v[i]*v[k];
+                    }else{
+                        H[i][k] = -beta*v[i]*v[k];
+                    }
+                }
+            }
+            temp = Multiply(H,temp);
+            for(i = j;i<m;i++){
+                for(k = j;k<n;k++){
+                    matrix[i][k] = temp[i-j][k-j];
+                }
+            }
+            //delete [] H;
+            //delete [] temp;
+            d[j] = beta;
+            for(k = j+1;k<m;k++){
+                matrix[k][j] = v[k-j];
+            }
+        }
+    }
+    vector<vector<double> >Q(m,vector<double > (m));
+    for(j = 0;j<n;j++){
+        vector<double> r(m-j);
+        r[0] = 1;
+        for(i = j+1;i<m;i++){
+            r[i-j] = matrix[i][j];
+            matrix[i][j] = 0;
+        }
+        vector<vector<double> >H(m,vector<double > (m));
+        H = HouseholderMatrix(r,d[j],m);
+        if(j == 0){
+            Q = H;
+        }else{
+            Q = Multiply(Q,H);
+        }
+    }
+    return Q;
+}
+/**
+ * @brief Equals to lsqr(A,b) in MATLAB.
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector <double> 
+ */
+vector <double> QRLS(vector<vector<double> > matrix,vector<double> b)
+{
+    //最小二乘解 估计
+    int m = matrix.size();
+    int n = matrix[0].size();
+    vector<vector<double> >Q(m,vector<double > (m));
+    Q = QR(matrix);
+    vector<double> x(n),c(n);
+    int i,j,k;
+    Transposition_In_Place(Q);
+    b = Multiply(Q,b);
+    for(i = 0;i<n;i++){
+        c[i] = b[i];
+    }
+    x = UpperMatrix(matrix,c);
+    return x;
+}
