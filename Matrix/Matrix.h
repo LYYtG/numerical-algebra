@@ -2,8 +2,8 @@
  * @file Matrix.h
  * @author 李杨野 (1300096763@qq.com 3190103519@zju.edu.cn)
  * @brief Header file for matrix, for test only. Completely written by myself.
- * @version 0.1
- * @date 2021-04-15
+ * @version 4.2
+ * @date 2021-05-16
  * 
  * @copyright Copyright (c) 2021 
  * 
@@ -310,7 +310,7 @@ double InfiniteNorm(vector<double> &b)
     int n = b.size();
     double max = fabs(b[0]);
     for(int i = 1;i<n;i++){
-        if(fabs(b[i]>max))
+        if(fabs(b[i])>max)
             max = fabs(b[i]);
     }
     return max;
@@ -858,4 +858,107 @@ vector <double> QRLS(vector<vector<double> > matrix,vector<double> b)
     }
     x = UpperMatrix(matrix,c);
     return x;
+}
+/**
+ * @brief Jacobi Iteration
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector <double> 
+ */
+vector <double> Jacobi(vector<vector<double> > matrix,vector<double> b)
+{
+    //非奇异，暂定m=n
+    int n = matrix[0].size();
+    vector<double> x(n),x1(n),t(n);
+    int i,j,k = 0;
+    do{
+        x = x1;//记录x_{k-1}的值，便于误差估计
+        for(i = 0;i<n;i++){
+            double sum = 0;
+            for(int j=0;j<n;j++){
+                if(i!=j){
+                    sum += matrix[i][j]*x[j];
+                }
+            }
+            x1[i]=(b[i]-sum)/matrix[i][i];
+        }
+        for(i = 0;i<n;i++){
+            t[i] = x[i]-x1[i];
+        }
+        k++;
+    }while(k<100&&InfiniteNorm(t)>=0.00001);
+    if(k>100){
+        cout << "迭代次数过多，请确认矩阵是否收敛！"<< endl;
+    }
+    return x;
+}
+/**
+ * @brief Gauss-Seidel Iteration
+ * 
+ * @param matrix 
+ * @param b 
+ * @return vector <double> 
+ */
+vector <double> GaussSeidel(vector<vector<double> > matrix,vector<double> b)
+{
+    //非奇异，暂定m=n
+    int n = matrix[0].size();
+    vector<double> x(n),x1(n),t(n);
+    int i,j,k = 0,l;
+    do{
+        x = x1;//记录x_{k-1}的值，便于误差估计
+        for(i = 0;i<n;i++){
+            double sum = 0;
+            for(int j=0;j<n;j++){
+                if(i!=j){
+                    sum += matrix[i][j]*x1[j];//这里用x1而不是x，和Jacobi有所不同
+                }
+            }
+            x1[i]=(b[i]-sum)/matrix[i][i];
+        }
+        for(i = 0;i<n;i++){
+            t[i] = x[i]-x1[i];
+        }
+        k++;
+    }while(k<100&&InfiniteNorm(t)>=0.00001);
+    if(k>100){
+        cout << "迭代次数过多，请确认矩阵是否收敛！"<< endl;
+    }
+    return x1;
+}
+/**
+ * @brief SOR Iteration
+ * 
+ * @param matrix 
+ * @param b 
+ * @param omega 
+ * @return vector <double> 
+ */
+vector <double> SOR(vector<vector<double> > matrix,vector<double> b,double omega)
+{
+    //omega由系数矩阵决定，取最佳松弛因子
+    int n = matrix[0].size();
+    vector<double> x(n),x1(n),t(n);
+    int i,j,k = 0,l;
+    do{
+        x = x1;//记录x_{k-1}的值，便于误差估计
+        for(i = 0;i<n;i++){
+            double sum = 0;
+            for(int j=0;j<n;j++){
+                if(i!=j){
+                    sum += matrix[i][j]*x1[j];
+                }
+            }
+            x1[i]=omega*(b[i]-sum)/matrix[i][i]+(1-omega)*x[i];//应该是这样吧…？
+        }
+        for(i = 0;i<n;i++){
+            t[i] = x[i]-x1[i];
+        }
+        k++;
+    }while(k<100&&InfiniteNorm(t)>=0.00001);
+    if(k>100){
+        cout << "迭代次数过多，请确认矩阵是否收敛！"<< endl;
+    }
+    return x1;
 }
