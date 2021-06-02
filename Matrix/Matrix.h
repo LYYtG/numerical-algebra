@@ -962,3 +962,57 @@ vector <double> SOR(vector<vector<double> > matrix,vector<double> b,double omega
     }
     return x1;
 }
+/**
+ * @brief double the sum of b[i]^2
+ * 
+ * @param b 
+ * @return 
+ */
+double Square(vector<double> b)
+{
+    double sum = 0;
+    int n = b.size();
+    for(int i = 0;i<n;i++){
+        sum+=b[i]*b[i];
+    }
+    return sum;
+}
+/**
+ * @brief Conjugate Gradient method.
+ * 
+ * @param A 
+ * @param b 
+ * @return vector <double> 
+ */
+vector <double> CG(vector<vector<double> > A,vector<double> b)
+{
+    int n = A[0].size();
+    int i,j;
+    double alpha,beta;
+    vector <double> x(n),r(n),t(n),p(n),temp(n);//初值为0
+    r = b;//r_0 = b-Ax_0 = b.
+    t = b;
+    int k = 0;
+    while(OneNorm(t)>0.0001 && k<1000){
+        k++;
+        if(k == 1){
+            p = t;
+        }else{
+            beta = Square(t)/Square(r);
+            for(i = 0;i<n;i++){
+                p[i] = t[i]+beta*p[i];//p_k-1 -> p_k-2
+            }
+        }
+        r = t;
+        temp = Multiply(A,p);
+        alpha = Square(t)/Multiply(p,temp);
+        for(i = 0;i<n;i++){
+            x[i] += alpha*p[i];
+            for(j = 0;j<n;j++){
+                t[i] -= alpha*A[i][j]*p[j];//r_k-1 -> r_k
+            }
+        }//t = rk
+    }
+    if(k>=1000)cout << "too much iteration!";
+    return x;
+}
