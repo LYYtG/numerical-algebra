@@ -98,3 +98,33 @@ void QREig(vector<vector<double> > A)
         cout << A[i][i] << " ";
     }
 }
+void Hessenberg(vector<vector<double> > A)
+{
+    int n = A[0].size();
+    double u = 1e-15;
+    vector<vector<double> > H(n,vector<double> (n));
+    vector<vector<double> > Q(n,vector<double> (n));
+    int i,j,k;
+    double beta;
+    k = 0;
+    for(k = 0;k<n-2;k++)
+    {
+        vector<double> h(n-k-1),v(n-k-1);
+        for(i = 0;i<n-k-1;i++){
+            h[i] = A[k+i+1][k];
+        }
+        v = Householder(h,beta);
+        H = HouseholderMatrix(v,beta,n);
+        A = Multiply(H,A);
+        A = Multiply(A,H);
+    }
+    for(i = 0;i<n;i++){
+        for(j = 0;j<n;j++)
+        {
+            if(fabs(A[i][j])<u){
+                A[i][j] = 0;
+            }
+        }
+    }
+    Print(A);
+}
