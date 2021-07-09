@@ -389,6 +389,22 @@ double InfiniteNorm(vector<vector<double> > &matrix)
     return max;
 }
 /**
+ * @brief 
+ * 
+ * @param A 
+ * @return double 
+ */
+double TwoNorm(vector<double> A)
+{
+    int n = A.size();
+    int i;
+    double sum = 0;
+    for(i = 0;i<n;i++){
+        sum+=A[i]*A[i];
+    }
+    return sqrt(sum);
+}
+/**
  * @brief sgn(x) in math.
  * 
  * @param x 
